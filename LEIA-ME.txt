@@ -1,0 +1,25 @@
+LEITURA DE COCHO — APP ANDROID OFFLINE
+
+Conteúdo:
+- index.html: aplicativo
+- manifest.json e sw.js: instalação PWA e cache offline
+
+FUNCIONAMENTO
+- 2 linhas: A e B
+- 17 baias por linha
+- Notas: -1, 0, 0,5, 1, 1,5 e 2
+- Ao tocar numa nota, salva e avança automaticamente
+- Botão Voltar permite retornar à baia anterior
+- Dados ficam no armazenamento local do navegador
+- Gerar PDF: abre o relatório; toque em “Imprimir / Salvar PDF” e escolha “Salvar como PDF”
+
+INSTALAÇÃO NO ANDROID
+1. Hospede estes três arquivos em um endereço HTTPS (pode ser hospedagem estática).
+2. Abra o endereço no Chrome do Android, com internet na primeira abertura.
+3. Use o menu ⋮ > “Instalar app” ou “Adicionar à tela inicial”.
+4. Abra o aplicativo instalado. Depois do primeiro carregamento, as telas e funções ficam disponíveis offline.
+
+IMPORTANTE
+- Os dados ficam somente no aparelho/navegador onde foram lançados. Não há sincronização ou backup automático.
+- Não limpe os dados do Chrome nem desinstale o app antes de exportar/registrar os dados necessários.
+- O PDF é produzido pelo recurso de impressão do Android/Chrome.

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#183b2b">
+<link rel="manifest" href="manifest.json">
+<title>Leitura de Cocho</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#17231c;background:#f2f5f2}
+*{box-sizing:border-box}body{margin:0;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:#183b2b;color:#fff;padding:18px 16px;text-align:center}
+header h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:13px;opacity:.85}
+main{max-width:620px;margin:auto;padding:14px}
+.panel{background:#fff;border-radius:14px;padding:16px;margin:0 0 13px;box-shadow:0 2px 8px #0000000c}
+.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}
+input,select{width:100%;padding:12px;border:1px solid #cbd5ce;border-radius:9px;font-size:16px;background:#fff}
+button{border:0;border-radius:10px;padding:14px 10px;font-size:16px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.4}
+.primary{background:#1d6845;color:#fff}.secondary{background:#e5ece7;color:#183b2b}.danger{background:#f8e6e4;color:#8a2b24}
+.tabs{display:flex;gap:8px}.tabs button{flex:1}.tabs .active{background:#183b2b;color:#fff}
+#work{display:none}
+.topline{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#52645a}
+.progress{height:9px;background:#e5ece7;border-radius:9px;overflow:hidden;margin:10px 0 18px}.bar{height:100%;background:#268354;width:0}
+.bay{text-align:center;font-size:48px;font-weight:800;margin:14px 0 4px;color:#183b2b}
+.sub{text-align:center;color:#637168;font-size:14px;margin-bottom:18px}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.notes button{min-height:74px;font-size:24px;background:#e9f0eb;color:#183b2b;border:2px solid transparent}
+.notes button:active{background:#cce4d4}
+.actions{display:flex;gap:10px;margin-top:14px}.actions button{flex:1}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 7px;border-bottom:1px solid #e5ebe6;text-align:center}th{background:#f0f4f1}
+.small{font-size:12px;color:#66756c}.summarygrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summarygrid div{background:#f0f4f1;padding:12px;border-radius:9px;text-align:center}
+.summarygrid strong{font-size:21px;display:block;color:#183b2b}
+@media print{header,.no-print{display:none!important}body{background:white}main{max-width:none;padding:0}.panel{box-shadow:none;border:0;padding:5px;margin:0 0 8px}#report{display:block!important}table{font-size:12px}th,td{padding:6px}}
+</style>
+</head>
+<body>
+<header><h1>Leitura de Cocho</h1><p>Registro offline · Linhas A e B · 17 baias por linha</p></header>
+<main>
+<section class="panel no-print">
+ <div class="row">
+  <div><label for="date">Data da leitura</label><input id="date" type="date"></div>
+  <div><label for="shift">Horário</label><input id="shift" type="time"></div>
+ </div>
+ <p class="small">Os registros ficam salvos neste aparelho. Não é necessária conexão com a internet após a instalação.</p>
+</section>
+<section class="panel no-print">
+ <label>Escolha a linha</label>
+ <div class="tabs"><button id="tabA" class="active" onclick="selectLine('A')">LINHA A</button><button id="tabB" class="secondary" onclick="selectLine('B')">LINHA B</button></div>
+</section>
+<section id="work" class="panel no-print">
+ <div class="topline"><span id="lineLabel">LINHA A</span><span id="counter">Baia 1 de 17</span></div>
+ <div class="progress"><div class="bar" id="bar"></div></div>
+ <div class="bay" id="bay">A1</div><div class="sub">Selecione a nota para registrar e avançar automaticamente</div>
+ <div class="notes">
+  <button onclick="choose(-1)">-1</button><button onclick="choose(0)">0</button><button onclick="choose(0.5)">0,5</button>
+  <button onclick="choose(1)">1</button><button onclick="choose(1.5)">1,5</button><button onclick="choose(2)">2</button>
+ </div>
+ <div class="actions"><button class="secondary" id="back" onclick="goBack()">← Voltar</button><button class="secondary" onclick="clearCurrent()">Limpar nota</button></div>
+ <p class="small" id="saved"></p>
+</section>
+<section class="panel no-print">
+ <div class="row"><div><strong>Resumo da leitura</strong><div class="small">Notas registradas por linha</div></div><button class="primary" onclick="showReport()">Gerar PDF</button></div>
+ <div class="summarygrid" style="margin-top:12px">
+  <div><span>Linha A</span><strong id="countA">0/17</strong></div><div><span>Linha B</span><strong id="countB">0/17</strong></div>
+ </div>
+ <div class="row" style="margin-top:12px"><button class="secondary" onclick="selectLine('A')">Continuar A</button><button class="secondary" onclick="selectLine('B')">Continuar B</button></div>
+</section>
+<section id="report" class="panel" style="display:none">
+ <h2 style="text-align:center;margin:4px 0">Relatório de Leitura de Cocho</h2>
+ <p id="reportMeta" style="text-align:center;font-size:13px"></p>
+ <div id="reportTables"></div>
+ <p class="small" style="text-align:center;margin-top:18px">Relatório gerado pelo aplicativo Leitura de Cocho</p>
+ <div class="no-print actions"><button class="secondary" onclick="hideReport()">Voltar</button><button class="primary" onclick="window.print()">Imprimir / Salvar PDF</button></div>
+</section>
+</main>
+<script>
+const KEY='leitura-cocho-v1';
+let data=JSON.parse(localStorage.getItem(KEY)||'{"A":{},"B":{}}'), line='A', bayIndex=1;
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));updateSummary()}
+function updateSummary(){['A','B'].forEach(l=>$('count'+l).textContent=Object.keys(data[l]).length+'/17')}
+function selectLine(l){line=l;bayIndex=1;while(bayIndex<=17 && data[line][bayIndex]!==undefined)bayIndex++;if(bayIndex>17)bayIndex=17; $('tabA').className=l==='A'?'active':'secondary';$('tabB').className=l==='B'?'active':'secondary';$('work').style.display='block';render()}
+function render(){ $('lineLabel').textContent='LINHA '+line;$('bay').textContent=line+bayIndex;$('counter').textContent='Baia '+bayIndex+' de 17';$('bar').style.width=((bayIndex-1)/17*100)+'%';$('back').disabled=bayIndex===1;$('saved').textContent=data[line][bayIndex]!==undefined?'Nota atual: '+fmt(data[line][bayIndex]):'Baia sem nota registrada';}
+function choose(n){data[line][bayIndex]=n;persist();if(bayIndex<17){bayIndex++;render()}else{$('bar').style.width='100%';$('saved').textContent='Linha '+line+' concluída. Use Voltar para corrigir ou selecione outra linha.';render();}}
+function goBack(){if(bayIndex>1){bayIndex--;render()}}
+function clearCurrent(){delete data[line][bayIndex];persist();render()}
+function fmt(n){return String(n).replace('.',',')}
+function showReport(){
+ $('work').style.display='none';$('report').style.display='block';
+ const d=$('date').value||new Date().toISOString().slice(0,10), t=$('shift').value||'Não informado';
+ $('reportMeta').textContent='Data: '+d.split('-').reverse().join('/')+' · Horário: '+t;
+ $('reportTables').innerHTML=['A','B'].map(l=>'<h3>LINHA '+l+'</h3><table><thead><tr><th>Baia</th><th>Nota</th></tr></thead><tbody>'+Array.from({length:17},(_,i)=>'<tr><td>'+l+(i+1)+'</td><td>'+(data[l][i+1]===undefined?'—':fmt(data[l][i+1]))+'</td></tr>').join('')+'</tbody></table>').join('');
+}
+function hideReport(){$('report').style.display='none';$('work').style.display='block'}
+$('date').value=new Date().toISOString().slice(0,10);
+$('shift').value=new Date().toTimeString().slice(0,5);
+updateSummary();selectLine('A');
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+</script>
+</body></html>
